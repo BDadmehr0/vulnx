@@ -37,12 +37,43 @@ function debianOS() {
     exit
   fi 
 }
+
+function archOS() {
+  echo -e "$red [$green+$red]$off Cleaning Up Old Directories ...";
+  sudo rm -r "/usr/share/vulnx"
+  echo -e "$red [$green+$red]$off Installing ...";
+  sudo git clone https://github.com/anouarbensaad/vulnx "/usr/share/vulnx";
+  sudo rm -r "/usr/share/vulnx/config"
+  if [[ -d "/usr/share/vulnx" ]]; then
+    echo -e "$red [$green+$red]$off Tool Successfully Updated And Will Start In 5s!";
+    echo -e "$red [$green+$red]$off You can execute tool by typing vulnx";
+    sleep 5;
+    vulnx
+  else
+    echo -e "$red [$green✘$red]$off Tool Cannot Be Installed On Your System! Use It As Portable !";
+    exit
+  fi 
+}
+
 if [[ -d "/data/data/com.termux/files/usr/" ]]; then
-banner
-echo -e "$red [$green+$red]$off vulnx Will Be Installed In Your System";
-termuxOS
-elif [ -d "/usr/bin/" ];then
-banner
-echo -e "$red [$green+$red]$off vulnx Will Be Installed In Your System";
-debianOS
+    banner
+    echo -e "$red [$green+$red]$off vulnx Will Be Installed In Your System"
+    termuxOS
+elif [[ -f "/etc/os-release" ]]; then
+    source /etc/os-release
+    banner
+    echo -e "$red [$green+$red]$off vulnx Will Be Installed In Your System"
+
+    case "$ID" in
+        debian|ubuntu)
+            debianOS
+            ;;
+        arch)
+            archOS
+            ;;
+        *)
+            echo -e "$red [$green✘$red]$off Unsupported OS: $ID. Use It As Portable!"
+            ;;
+    esac
 fi
+
